@@ -6,7 +6,6 @@ from flask_babel import Babel
 
 app = Flask(__name__)
 
-# Mocked user database
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -16,7 +15,7 @@ users = {
 
 
 class Config:
-    """Configuration for Babel and i18n"""
+    """Config class for your application, it deals with babel mostly"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
@@ -28,40 +27,39 @@ babel = Babel(app)
 
 @babel.localeselector
 def get_locale():
-    """Determine the best match for supported languages"""
+    """Get locale for your application"""
     locale = request.args.get('locale')
     if locale and locale in app.config['LANGUAGES']:
         return locale
-    if g.get('user') and g.user.get("locale") in app.config['LANGUAGES']:
-        return g.user['locale']
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
+@app.route('/', methods=['GET'], strict_slashes=False)
+def home():
+    """Home page for your application"""
+    login = False
+    if g.get('user'):
+        login = True
+    return render_template('5-index.html', login=login)
+
+
 def get_user():
-    """Get user based on the login_as URL parameter"""
+    """Get user information from users dict"""
     try:
         login_as = int(request.args.get('login_as'))
-        return users.get(login_as)
-    except (TypeError, ValueError):
+        return users.get(int(login_as))
+    except Exception:
         return None
 
 
 @app.before_request
 def before_request():
-    """Set g.user before each request if the user exists"""
+    """Before request"""
     user = get_user()
+    print(user)
     if user:
         g.user = user
-    else:
-        g.user = None
-
-
-@app.route('/', methods=['GET'])
-def home():
-    """Render the homepage"""
-    login = g.user is not None
-    return render_template('5-index.html', login=login)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run()
