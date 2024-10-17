@@ -33,25 +33,25 @@ def get_locale():
 @app.route('/', methods=['GET', 'POST'], strict_slashes=False)
 def home():
     """Home page for your application"""
-    login = False
-    if g.user:
-        login = True
-    return render_template('5-index.html', login=login)
+    user_id = request.args.get('login_as')
+    if user_id:
+        g.user = get_user(user_id)
+    return render_template('5-index.html')
 
-def get_user():
+def get_user(user_id):
     """Get user based on the login_as URL parameter"""
     try:
-        login_as = int(request.args.get('login_as'))
-        return users.get(login_as)  # Returns user object or None
+        user_id = int(user_id)
+        return users.get(user_id)  # Returns user object or None
     except (TypeError, ValueError):
         return None
 
 @app.before_request
 def before_request():
     """Set g.user before each request if the user exists"""
-    user = get_user()
-    if user:
-        g.user = user
+    user_id = request.args.get('login_as')
+    if user_id:
+        g.user = get_user(user_id)
     else:
         g.user = None
 
