@@ -44,21 +44,22 @@ def home():
 
 
 def get_user():
-    """Get user information from users dict"""
+    """Get user based on the login_as URL parameter"""
     try:
         login_as = int(request.args.get('login_as'))
-        return users.get(int(login_as))
-    except Exception:
+        return users.get(login_as)  # Returns user object or None
+    except (TypeError, ValueError):
         return None
 
 
 @app.before_request
 def before_request():
-    """Before request"""
+    """Set g.user before each request if the user exists"""
     user = get_user()
-    print(user)
     if user:
         g.user = user
+    else:
+        g.user = None
 
 
 if __name__ == "__main__":
