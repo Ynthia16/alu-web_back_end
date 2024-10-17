@@ -5,14 +5,16 @@
     <title>{{ _('home_title') }}</title>
 </head>
 <body>
-    <h1>{{ _('home_header') }}</h1>
+    <h1>Hello World!</h1>
 
     {% if g.user %}
-        <p>{{ _('logged_in_as', username=g.user['name']) }}</p>
+        <p>You are logged in as {{ g.user.name }}.</p>
     {% else %}
-        <p>{{ _('not_logged_in') }}</p>
+        <p>You are not logged in.</p>
     {% endif %}
 
+    <p>Current locale: {{ get_locale() }}</p>
 </body>
 </html>
+
 
