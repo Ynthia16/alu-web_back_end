@@ -13,17 +13,14 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
-
 class Config:
     """Config class for your application, it deals with babel mostly"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
 
-
 app.config.from_object(Config)
 babel = Babel(app)
-
 
 @babel.localeselector
 def get_locale():
@@ -33,15 +30,13 @@ def get_locale():
         return locale
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-
-@app.route('/', methods=['GET'], strict_slashes=False)
+@app.route('/', methods=['GET', 'POST'], strict_slashes=False)
 def home():
     """Home page for your application"""
     login = False
-    if g.get('user'):
+    if g.user:
         login = True
     return render_template('5-index.html', login=login)
-
 
 def get_user():
     """Get user based on the login_as URL parameter"""
@@ -50,7 +45,6 @@ def get_user():
         return users.get(login_as)  # Returns user object or None
     except (TypeError, ValueError):
         return None
-
 
 @app.before_request
 def before_request():
@@ -61,6 +55,6 @@ def before_request():
     else:
         g.user = None
 
-
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
+
