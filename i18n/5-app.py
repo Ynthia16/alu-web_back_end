@@ -6,7 +6,7 @@ from flask_babel import Babel
 
 app = Flask(__name__)
 
-# Users database for testing
+# Mocked user database
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -14,45 +14,54 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
+
 class Config:
-    """Config class for Babel and other app settings"""
+    """Configuration for Babel and i18n"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
 
+
 app.config.from_object(Config)
 babel = Babel(app)
 
+
 @babel.localeselector
 def get_locale():
-    """Select the best match language based on user settings or request headers"""
-    # Check if the user provides 'locale' in the query parameters
+    """Determine the best match for supported languages"""
     locale = request.args.get('locale')
     if locale and locale in app.config['LANGUAGES']:
         return locale
-    # Otherwise, try to find the best match in the accepted languages
+    if g.get('user') and g.user.get("locale") in app.config['LANGUAGES']:
+        return g.user['locale']
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
+
 def get_user():
-    """Retrieve user information based on 'login_as' query parameter"""
+    """Get user based on the login_as URL parameter"""
     try:
         login_as = int(request.args.get('login_as'))
         return users.get(login_as)
-    except Exception:
+    except (TypeError, ValueError):
         return None
+
 
 @app.before_request
 def before_request():
-    """Run before every request to set the user if they are logged in"""
+    """Set g.user before each request if the user exists"""
     user = get_user()
     if user:
-        g.user = user  # Set the user in the global object
+        g.user = user
+    else:
+        g.user = None
 
-@app.route('/', methods=['GET'], strict_slashes=False)
+
+@app.route('/', methods=['GET'])
 def home():
-    """Home page route"""
-    login = 'user' in g
+    """Render the homepage"""
+    login = g.user is not None
     return render_template('5-index.html', login=login)
 
+
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000)
