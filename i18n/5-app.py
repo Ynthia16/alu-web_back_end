@@ -17,14 +17,7 @@ Features:
 from flask import Flask, g, request, render_template
 from flask_babel import Babel
 
-class Config(object):
-    LANGUAGES = ['en', 'fr']
-    BABEL_DEFAULT_LOCALE = 'en'
-    BABEL_DEFAULT_TIMEZONE = 'UTC'
-
 app = Flask(__name__)
-app.config.from_object(Config)
-babel = Babel(app)
 
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
@@ -32,6 +25,16 @@ users = {
     3: {"name": "Spock", "locale": "kg", "timezone": "Vulcan"},
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
+
+class Config:
+    """Config class for your application, it deals with babel mostly"""
+    LANGUAGES = ["en", "fr"]
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_DEFAULT_TIMEZONE = "UTC"
+
+
+app.config.from_object(Config)
+babel = Babel(app)
 
 def get_user(id):
     try:
