@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""Basic Flask app that implements i18n and internationalization"""
+
 from flask import Flask, g, request, render_template
 from flask_babel import Babel
 
