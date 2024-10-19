@@ -49,7 +49,6 @@ def get_user(user_id):
 
 @app.before_request
 def before_request():
-    """Fetch user before handling a request and store it in the global context."""
     login_as = request.args.get('login_as')
     g.user = get_user(login_as)
 
@@ -67,16 +66,6 @@ def get_locale():
 
 @app.route('/')
 def index():
-    """
-    Render the index page with the user's name and appropriate locale-based messages.
-
-    If the user is logged in, display a welcome message with their username.
-    If the user is not logged in, display a generic message.
-    The language of the messages depends on the selected locale (English or French).
-
-    Returns:
-        str: A rendered HTML template with localized content.
-    """
     username = g.user["name"] if g.user else None
     current_locale = get_locale()
 
@@ -88,5 +77,4 @@ def index():
 
 
 if __name__ == '__main__':
-    # Run the app in debug mode
     app.run(debug=True, host='0.0.0.0', port=5000)  # Adjust as needed
