@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
-"""
-Flask application for demonstrating i18n (internationalization) features.
+"""Basic Flask app that implements i18n and internationalization"""
 
-This module creates a simple web application using Flask and Babel to handle
-multiple languages (English and French) and switch between them based on the user's locale.
-The application supports logging in as different users and shows messages in
-the appropriate language.
-
-Features:
-- Route to handle user login with locale switching
-- Internationalized messages using Flask-Babel
-- Dynamic message rendering based on user's locale
-
-"""
-
-from flask import Flask, g, request, render_template
+from flask import Flask, render_template, request, g
 from flask_babel import Babel
 
 app = Flask(__name__)
@@ -35,6 +22,7 @@ class Config:
 
 app.config.from_object(Config)
 babel = Babel(app)
+
 
 def get_user(id):
     try:
@@ -71,3 +59,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
