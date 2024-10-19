@@ -67,6 +67,21 @@ def get_locale():
 
 @app.route('/')
 def index():
+    """
+    Render the index page.
+    This function checks if the user is
+    logged in and retrieves their username.
+    It also determines the current locale
+    based on user preferences.
+    If the user is logged in, a personalized
+    welcome message with the username is displayed.
+    If not, a generic message is shown.
+    The displayed language depends on the selected locale
+    (either English or French).
+    Returns:
+        str: The rendered HTML template
+        with localized content.
+    """
     username = g.user["name"] if g.user else None
     current_locale = get_locale()
 
