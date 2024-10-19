@@ -13,6 +13,7 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
+
 class Config:
     """Config class for your application, it deals with babel mostly"""
     LANGUAGES = ["en", "fr"]
