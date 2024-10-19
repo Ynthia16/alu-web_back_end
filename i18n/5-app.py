@@ -2,7 +2,7 @@
 """
 Basic Flask app that implements i18n and internationalization.
 
-This app demonstrates the use of Flask and Flask-Babel for handling 
+This app demonstrates the use of Flask and Flask-Babel for handling
 multi-language support, switching between languages based on user preferences.
 """
 
@@ -18,8 +18,10 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
+
 class Config:
-    """Config class for your application, it deals with babel mostly."""
+    """Config class for your application, it deals with Babel mostly."""
+
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
@@ -29,18 +31,18 @@ app.config.from_object(Config)
 babel = Babel(app)
 
 
-def get_user(id):
+def get_user(user_id):
     """
     Retrieve user information based on user ID.
 
     Args:
-        id (int): The ID of the user.
+        user_id (int): The ID of the user.
 
     Returns:
         dict or None: User dictionary if found, otherwise None.
     """
     try:
-        return users.get(int(id))
+        return users.get(int(user_id))
     except (ValueError, TypeError):
         return None
 
@@ -77,8 +79,14 @@ def index():
     """
     username = g.user["name"] if g.user else None
     current_locale = get_locale()
-    return render_template('5-index.html', username=username, current_locale=current_locale)
+
+    return render_template(
+        '5-index.html',
+        username=username,
+        current_locale=current_locale
+    )
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Run the app in debug mode
+    app.run(debug=True, host='0.0.0.0', port=5000)  # Adjust as needed
