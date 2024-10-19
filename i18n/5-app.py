@@ -49,6 +49,7 @@ def get_user(user_id):
 
 @app.before_request
 def before_request():
+    """Before request"""
     login_as = request.args.get('login_as')
     g.user = get_user(login_as)
 
