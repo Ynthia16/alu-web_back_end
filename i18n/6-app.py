@@ -6,7 +6,6 @@ from flask_babel import Babel
 
 app = Flask(__name__)
 
-# Users database for testing
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -14,46 +13,57 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
+
 class Config:
-    """Config class for Babel and other app settings"""
+    """Config class for your application, it deals with babel mostly"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
 
+
 app.config.from_object(Config)
 babel = Babel(app)
 
+
 @babel.localeselector
 def get_locale():
-    """Select the best match language based on user settings or request headers"""
+    """Get locale for your application"""
     locale = request.args.get('locale')
     if locale and locale in app.config['LANGUAGES']:
         return locale
     user = g.get('user')
-    if user and user.get("locale") in app.config['LANGUAGES']:
-        return user["locale"]
+    if (user and user.get("locale", None)
+            and user["locale"] in app.config['LANGUAGES']):
+        return g.user["locale"]
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-def get_user():
-    """Retrieve user information based on 'login_as' query parameter"""
-    try:
-        login_as = int(request.args.get('login_as'))
-        return users.get(login_as)
-    except (ValueError, TypeError):
-        return None
-
-@app.before_request
-def before_request():
-    """Run before every request to set the user if they are logged in"""
-    user = get_user()
-    if user:
-        g.user = user  # Set the user in the global object
 
 @app.route('/', methods=['GET'], strict_slashes=False)
 def home():
-    """Home page route"""
-    login = 'user' in g
+    """Home page for your application"""
+    login = False
+    if g.get('user'):
+        login = True
     return render_template('6-index.html', login=login)
+
+
+def get_user():
+    """Get user information from users dict"""
+    try:
+        login_as = int(request.args.get('login_as'))
+        return users.get(int(login_as))
+    except Exception:
+        return None
+
+
+@app.before_request
+def before_request():
+    """Before request"""
+    user = get_user()
+    print(user)
+    if user:
+        g.user = user
+
 
 if __name__ == "__main__":
     app.run()
