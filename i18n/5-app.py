@@ -6,9 +6,7 @@ from typing import (
     Dict, Union
 )
 
-from flask import Flask
-from flask import g, request
-from flask import render_template
+from flask import Flask, g, request, render_template
 from flask_babel import Babel
 
 
@@ -28,18 +26,15 @@ app.config.from_object(Config)
 # Wrap the application with Babel
 babel = Babel(app)
 
-
-@babel.localeselector
-def get_locale() -> str:
-    """
-    Gets locale from request object
-    """
+@babel.localeselector  # This is correct for Flask-Babel 2.x
+def get_locale():
     locale = request.args.get('locale', '').strip()
     if locale and locale in Config.LANGUAGES:
         return locale
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
+# Mock database of users
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -50,21 +45,25 @@ users = {
 
 def get_user(id) -> Union[Dict[str, Union[str, None]], None]:
     """
-    Validate user login details
+    Validate user login details.
     Args:
-        id (str): user id
+        id (str): user id.
     Returns:
-        (Dict): user dictionary if id is valid else None
+        (Dict): user dictionary if id is valid else None.
     """
-    return users.get(int(id), 0)
+    try:
+        return users.get(int(id))
+    except (ValueError, TypeError):
+        return None
 
 
 @app.before_request
 def before_request():
     """
-    Adds valid user to the global session object `g`
+    Adds valid user to the global session object `g`.
     """
-    setattr(g, 'user', get_user(request.args.get('login_as', 0)))
+    login_as = request.args.get('login_as')
+    g.user = get_user(login_as)  # Now returns None if login_as is not found or invalid
 
 
 @app.route('/', strict_slashes=False)
