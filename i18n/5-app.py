@@ -66,12 +66,13 @@ def before_request():
     g.user = get_user(login_as)  # Now returns None if login_as is not found or invalid
 
 
-@app.route('/', strict_slashes=False)
-def index() -> str:
-    """
-    Renders a basic html template
-    """
-    return render_template('5-index.html')
+@app.route('/')
+def index():
+    try:
+        username = g.user["name"] if g.user else None
+        return render_template('5-index.html', username=username)
+    except Exception as e:
+        return f"An error occurred: {e}", 500
 
 
 if __name__ == '__main__':

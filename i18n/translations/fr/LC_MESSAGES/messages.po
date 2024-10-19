@@ -1,4 +1,4 @@
-# French translations for PROJECT.
+# French translations for your application.
 # Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -17,4 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
+
+msgid "You are logged in as %(username)s."
+msgstr "Vous êtes connecté en tant que %(username)s."
+
+msgid "You are not logged in."
+msgstr "Vous n'êtes pas connecté."
+
+msgid "home_title"
+msgstr "Accueil"
+
+msgid "home_header"
+msgstr "Bienvenue dans notre application!"
 

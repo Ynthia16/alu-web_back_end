@@ -1,4 +1,4 @@
-# English translations for PROJECT.
+# English translations for your application.
 # Copyright (C) 2024 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -18,3 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
+msgid "You are logged in as %(username)s."
+msgstr "You are logged in as %(username)s."
+
+msgid "You are not logged in."
+msgstr "You are not logged in."
+
+msgid "home_title"
+msgstr "Home"
+
+msgid "home_header"
+msgstr "Welcome to our application!"
