@@ -1,40 +1,15 @@
-#!/usr/bin/env python3
-"""
-A Basic flask application
-"""
-from typing import (
-    Dict, Union
-)
-
 from flask import Flask, g, request, render_template
 from flask_babel import Babel
 
-
 class Config(object):
-    """
-    Application configuration class
-    """
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
 
-
-# Instantiate the application object
 app = Flask(__name__)
 app.config.from_object(Config)
-
-# Wrap the application with Babel
 babel = Babel(app)
 
-@babel.localeselector  # This is correct for Flask-Babel 2.x
-def get_locale():
-    locale = request.args.get('locale', '').strip()
-    if locale and locale in Config.LANGUAGES:
-        return locale
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
-
-
-# Mock database of users
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -42,38 +17,26 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
-
-def get_user(id) -> Union[Dict[str, Union[str, None]], None]:
-    """
-    Validate user login details.
-    Args:
-        id (str): user id.
-    Returns:
-        (Dict): user dictionary if id is valid else None.
-    """
+def get_user(id):
     try:
         return users.get(int(id))
     except (ValueError, TypeError):
         return None
 
-
 @app.before_request
 def before_request():
-    """
-    Adds valid user to the global session object `g`.
-    """
     login_as = request.args.get('login_as')
-    g.user = get_user(login_as)  # Now returns None if login_as is not found or invalid
+    g.user = get_user(login_as)
 
+@babel.localeselector
+def get_locale():
+    return request.args.get('locale', 'en')
 
 @app.route('/')
 def index():
-    try:
-        username = g.user["name"] if g.user else None
-        return render_template('5-index.html', username=username)
-    except Exception as e:
-        return f"An error occurred: {e}", 500
-
+    username = g.user["name"] if g.user else None
+    current_locale = get_locale()  # Fetch the current locale using Babel's `get_locale()`
+    return render_template('5-index.html', username=username, current_locale=current_locale)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
